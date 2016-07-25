@@ -4,4 +4,11 @@
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">ChatAppsdemo</string>
     <string name ="action_settings">Settings</string>
+    <string-array name="contacts_array">
+        <item>Contact1</item>
+        <item>Contact2</item>
+        <item>Contact3</item>
+        <item>Contact4</item>
+        <item>Contact5</item>
+    </string-array>
 </resources>
