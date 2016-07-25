@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "24788899907",
+    "project_id": "makemesmarter24x7"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24788899907:android:da97b6dd38894555",
+        "android_client_info": {
+          "package_name": "make.me.smarter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_hNYVpzkUfpZMe6vr9M2fS3dWbq6d_Q0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

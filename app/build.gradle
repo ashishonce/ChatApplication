@@ -5,7 +5,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.tutorial.chatapps"
+        applicationId "make.me.smarter"
         minSdkVersion 14
         targetSdkVersion 14
     }
@@ -17,5 +17,15 @@ android {
         }
     }
 }
+
+dependencies {
+    compile 'com.google.android.gms:play-services-gcm:8.4.0'
+    compile 'com.google.android.gms:play-services-ads:8.4.0'
+}
+
+apply plugin: 'com.google.gms.google-services'
+
+
+
 
 
