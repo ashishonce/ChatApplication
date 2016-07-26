@@ -195,6 +195,7 @@ public class MainActivity extends Activity {
         	
 		});
 
+        //Suggestion Part
         suggestions = (LinearLayout) findViewById(R.id.suggestionsView);
 
         textSwitcher = (TextSwitcher) findViewById(R.id.switcher);
@@ -252,8 +253,8 @@ public class MainActivity extends Activity {
 
     public boolean receiveChatMessage(String message){
         String[] receivedMsg = message.split("\\$");
-        Log.i("message", message);
-        Log.i("split messag", receivedMsg[0]);
+//        Log.i("message", message);
+//        Log.i("split messag", receivedMsg[0]);
 
         if(receivedMsg.length > 0)
         {
