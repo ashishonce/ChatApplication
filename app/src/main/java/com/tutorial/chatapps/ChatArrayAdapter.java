@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -42,14 +41,14 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage>{
 	 }
 	
 	 public ChatMessage getItem(int index){
-		 
-		 
-		 
+
+
+
 		return this.MessageList.get(index);
-		 
-		 
+
+
 	 }
-	 
+
 	  public View getView(int position,View ConvertView, ViewGroup parent){
 		  
 		   View v = ConvertView;
