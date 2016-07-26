@@ -13,15 +13,18 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -37,6 +40,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,13 +57,12 @@ public class MainActivity extends Activity {
     private static final String TAG = "ChatActivity";
 
     private ChatArrayAdapter adp;
-    private  ChatArrayAdapter adp0;
-    private  ChatArrayAdapter adp1;
-    private  ChatArrayAdapter adp2;
+    private TextView currentuser;
     private ListView list;
     private EditText chatText;
     private Button send;
     private LinearLayout suggestions;
+    private ImageView suggestionsImage;
     private TextSwitcher textSwitcher;
     private Vector<String> suggestionList;
     private int index;
@@ -85,6 +88,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         Intent i = getIntent();
         setContentView(R.layout.main);
@@ -96,46 +100,14 @@ public class MainActivity extends Activity {
         };
 
         startRegistrationService(true, false);
-        String[] items = new String[] { "Contact1", "Contact2", "Contact3" };
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, items);
-        Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
-        dynamicSpinner.setAdapter(adapter);
-
-        dynamicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                Log.v("item", (String) parent.getItemAtPosition(position));
-                if (position == 0) {
-                    adp = adp0;
-                    list.setAdapter(adp0);
-                }
-                else if(position ==1) {
-                    adp = adp1;
-                    list.setAdapter(adp1);
-                }
-                else if(position == 2) {
-                    adp = adp2;
-                    list.setAdapter(adp2);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
-            }
-        });
+        currentuser = (TextView)findViewById(R.id.textView1);
+        currentuser.setText("Anonymous");
+        currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        suggestionsImage = (ImageView)findViewById(R.id.imageView2);
 
         send = (Button) findViewById(R.id.btn);
-
         list = (ListView) findViewById(R.id.listview);
-
-        adp0 = new ChatArrayAdapter(getApplicationContext(), R.layout.chat);
-        adp1 = new ChatArrayAdapter(getApplicationContext(), R.layout.chat);
-        adp2 = new ChatArrayAdapter(getApplicationContext(), R.layout.chat);
-        adp = adp0;
+        adp = new ChatArrayAdapter(getApplicationContext(), R.layout.chat);
         list.setAdapter(adp);
 
         chatText = (EditText) findViewById(R.id.chat_text);
@@ -199,7 +171,7 @@ public class MainActivity extends Activity {
     }
 
     private boolean sendChatMessage(){
-        adp.add(new ChatMessage(true, chatText.getText().toString()));
+        adp.add(new ChatMessage(false, chatText.getText().toString()));
 
         Thread thread = new Thread(new Runnable(){
             @Override
@@ -230,7 +202,7 @@ public class MainActivity extends Activity {
     }
 
     public boolean receiveChatMessage(String message){
-        adp.add(new ChatMessage(false, message ));
+        adp.add(new ChatMessage(true, message ));
         return true;
     }
 
@@ -291,10 +263,12 @@ public class MainActivity extends Activity {
     }
 
     private void hideSuggestions(){
+        suggestionsImage.setVisibility(View.INVISIBLE);
         suggestions.setVisibility(View.INVISIBLE);
     }
 
     private void showSuggestions(){
+        suggestionsImage.setVisibility(View.VISIBLE);
         suggestions.setVisibility(View.VISIBLE);
     }
 
