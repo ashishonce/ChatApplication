@@ -30,7 +30,6 @@
          android:layout_alignParentBottom="true"
          android:layout_alignParentLeft="true"
          android:orientation="vertical"
-        android:layout_below="@+id/listview"
         >
 
         <LinearLayout
