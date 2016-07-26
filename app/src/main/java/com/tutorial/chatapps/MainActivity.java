@@ -118,7 +118,6 @@ public class MainActivity extends Activity {
             // <---- run your one time code here
             startRegistrationService(true, false);
 
-
             // mark first time has runned.
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("firstTime", true);
@@ -204,13 +203,14 @@ public class MainActivity extends Activity {
 
         this.initializeTextSwitcher();
 
-        Vector<String> temp = new Vector<String>();
-        temp.add("Text Content 1");
-        temp.add("Text Content 2");
-        temp.add("Text Content 3");
-        temp.add("Text Content 4");
-
-        this.setSuggestionTextItems(temp);
+        suggestions.setVisibility(LinearLayout.GONE);
+//        Vector<String> temp = new Vector<String>();
+//        temp.add("Text Content 1");
+//        temp.add("Text Content 2");
+//        temp.add("Text Content 3");
+//        temp.add("Text Content 4");
+//
+//        this.setSuggestionTextItems(temp);
 
     }
 
@@ -259,7 +259,30 @@ public class MainActivity extends Activity {
     }
 
     public boolean receiveChatMessage(String message){
-        adp.add(new ChatMessage(false, message ));
+        message = message + "$ suggestion1 $ suggestion 2 $ suggestion1 $ suggestion 2";
+        String[] receivedMsg = message.split("\\$");
+
+        if(receivedMsg.length > 0)
+        {
+            adp.add(new ChatMessage(false, receivedMsg[0] ));
+        }
+
+        if(receivedMsg.length > 1)
+        {
+            Vector<String> temp = new Vector<String>();
+            for( int i=1;i <receivedMsg.length;i++ )
+            {
+                temp.add(receivedMsg[i]);
+            }
+
+            suggestions.setVisibility(LinearLayout.VISIBLE);
+            setSuggestionTextItems(temp);
+        }
+        else
+        {
+            suggestions.setVisibility(LinearLayout.GONE);
+        }
+
 
         return true;
     }
