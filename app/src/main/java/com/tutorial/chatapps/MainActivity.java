@@ -252,6 +252,8 @@ public class MainActivity extends Activity {
 
     public boolean receiveChatMessage(String message){
         String[] receivedMsg = message.split("\\$");
+        Log.i("message", message);
+        Log.i("split messag", receivedMsg[0]);
 
         if(receivedMsg.length > 0)
         {
@@ -266,8 +268,10 @@ public class MainActivity extends Activity {
                 temp.add(receivedMsg[i]);
             }
 
+            suggestionList.clear();
+            this.setSuggestionTextItems(temp);
             suggestions.setVisibility(LinearLayout.VISIBLE);
-            setSuggestionTextItems(temp);
+
         }
         else
         {
