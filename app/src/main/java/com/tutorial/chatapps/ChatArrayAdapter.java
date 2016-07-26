@@ -66,7 +66,7 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage>{
 		  chatText.setText(messageobj.message);
 		  chatText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
 		 
-		   chatText.setBackgroundResource(messageobj.left ? R.drawable.bubble_a : R.drawable.bubble_a);
+		   chatText.setBackgroundResource(messageobj.left ? R.drawable.bubble_b : R.drawable.bubble_a);
 		 // chatText.setBackgroundColor(messageobj.left ? Color.parseColor("#DCF2FA") : Color.parseColor("#BFE9F9"));
 		   layout.setGravity(messageobj.left?Gravity.LEFT:Gravity.RIGHT);
 		  

@@ -27,7 +27,9 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -118,7 +120,7 @@ public class MainActivity extends Activity {
         currentuser.setText(prefs.getString("senderID","New"));
         currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         suggestionsImage = (ImageView)findViewById(R.id.imageView2);
-
+        suggestionsImage.setVisibility(View.INVISIBLE);
         // initialization
 
         if (!prefs.getBoolean("firstTime", false)) {
@@ -160,6 +162,7 @@ public class MainActivity extends Activity {
         list.setAdapter(adp);
 
         chatText = (EditText) findViewById(R.id.chat_text);
+        chatText.setBackgroundDrawable(getResources().getDrawable(R.drawable.back));
         chatText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -199,7 +202,7 @@ public class MainActivity extends Activity {
         suggestionList = new Vector<String>();
         this.initializeTextSwitcher();
 
-        suggestions.setVisibility(LinearLayout.GONE);
+        hideSuggestions();
     }
 
     public void startRegistrationService(boolean reg, boolean tkr) {
@@ -271,12 +274,11 @@ public class MainActivity extends Activity {
 
             suggestionList.clear();
             this.setSuggestionTextItems(temp);
-            suggestions.setVisibility(LinearLayout.VISIBLE);
-
+            showSuggestions();
         }
         else
         {
-            suggestions.setVisibility(LinearLayout.GONE);
+            hideSuggestions();
         }
 
         return true;
@@ -350,17 +352,28 @@ public class MainActivity extends Activity {
             }
         });
 
+        TextView view = (TextView) textSwitcher.getCurrentView();
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        view = (TextView) textSwitcher.getNextView();
+        params = view.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+
         textSwitcher.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeRight() {
                 textSwitcher.setInAnimation(Slide.inFromLeftAnimation());
                 textSwitcher.setOutAnimation(Slide.outToRightAnimation());
+
                 index--;
 
-                if (size > 0 && index >=0){
+                if (size > 0 && index >= 0) {
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
                     if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
                     if (index < size - 1) rightArrow.setVisibility(View.VISIBLE);
+                }
+                else if (index < 0){
+                    hideSuggestions();
                 }
                 else {
                     index++;
@@ -370,13 +383,17 @@ public class MainActivity extends Activity {
             public void onSwipeLeft() {
                 textSwitcher.setInAnimation(Slide.inFromRightAnimation());
                 textSwitcher.setOutAnimation(Slide.outToLeftAnimation());
+
                 index++;
 
-                if (size > 0 && index < size){
+                if (size > 0 && index < size) {
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
                     if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
                     if (index > 0) leftArrow.setVisibility(View.VISIBLE);
+                }
+                else if (index == size){
+                    hideSuggestions();
                 }
                 else {
                     index--;
@@ -385,13 +402,14 @@ public class MainActivity extends Activity {
 
             public void onClick() {
                 chatText.setText(suggestedText);
+                hideSuggestions();
             }
         });
     }
 
     private void hideSuggestions(){
         suggestionsImage.setVisibility(View.INVISIBLE);
-        suggestions.setVisibility(View.INVISIBLE);
+        suggestions.setVisibility(View.GONE);
     }
 
     private void showSuggestions() {
