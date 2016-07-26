@@ -126,7 +126,7 @@ public class MainActivity extends Activity {
         currentuser.setText("Anonymous");
         currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         suggestionsImage = (ImageView)findViewById(R.id.imageView2);
-
+        suggestionsImage.setVisibility(View.INVISIBLE);
         // initialization
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -274,11 +274,12 @@ public class MainActivity extends Activity {
             suggestionList.clear();
             this.setSuggestionTextItems(temp);
             suggestions.setVisibility(LinearLayout.VISIBLE);
-
+            suggestionsImage.setVisibility(View.VISIBLE);
         }
         else
         {
             suggestions.setVisibility(LinearLayout.GONE);
+            suggestionsImage.setVisibility(View.INVISIBLE);
         }
 
         return true;
@@ -358,13 +359,12 @@ public class MainActivity extends Activity {
                 textSwitcher.setOutAnimation(Slide.outToRightAnimation());
                 index--;
 
-                if (size > 0 && index >=0){
+                if (size > 0 && index >= 0) {
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
                     if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
                     if (index < size - 1) rightArrow.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     index++;
                 }
             }
@@ -374,13 +374,12 @@ public class MainActivity extends Activity {
                 textSwitcher.setOutAnimation(Slide.outToLeftAnimation());
                 index++;
 
-                if (size > 0 && index < size){
+                if (size > 0 && index < size) {
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
                     if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
                     if (index > 0) leftArrow.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     index--;
                 }
             }
