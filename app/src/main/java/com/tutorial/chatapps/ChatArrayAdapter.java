@@ -6,6 +6,8 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,9 +65,10 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage>{
 		  ChatMessage messageobj = getItem(position);
 		  chatText =(TextView)v.findViewById(R.id.SingleMessage);
 		  chatText.setText(messageobj.message);
+		  chatText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
 		 
-		   chatText.setBackgroundResource(messageobj.left ? R.drawable.bubble_a :R.drawable.bubble_b);
-		  
+		   chatText.setBackgroundResource(messageobj.left ? R.drawable.bubble_a : R.drawable.bubble_a);
+		 // chatText.setBackgroundColor(messageobj.left ? Color.parseColor("#DCF2FA") : Color.parseColor("#BFE9F9"));
 		   layout.setGravity(messageobj.left?Gravity.LEFT:Gravity.RIGHT);
 		  
 		return v;
