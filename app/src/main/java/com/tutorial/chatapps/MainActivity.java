@@ -65,6 +65,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import static android.app.PendingIntent.getActivity;
+
 
 public class MainActivity extends Activity {
 
@@ -122,18 +124,19 @@ public class MainActivity extends Activity {
             }
         };
 
+        SharedPreferences prefs = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
         currentuser = (TextView)findViewById(R.id.textView1);
-        //currentuser.setText(GCMCommonUtils.SenderID);
+        currentuser.setText(prefs.getString("senderID","New"));
         currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         suggestionsImage = (ImageView)findViewById(R.id.imageView2);
 
         // initialization
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (!prefs.getBoolean("firstTime", false)) {
 
             // mark first time has runned.
-            SharedPreferences.Editor editor = prefs.edit();
             LayoutInflater inflater = getLayoutInflater();
             final View dialoglayout = inflater.inflate(R.layout.register, null);
 
@@ -145,11 +148,16 @@ public class MainActivity extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             String clientID = ((EditText)dialoglayout.findViewById(R.id.UserID)).getText().toString();
                             String senderID = ((EditText)dialoglayout.findViewById(R.id.SenderID)).getText().toString();
+
+                            SharedPreferences prefs = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+
+                            SharedPreferences.Editor preferencesEditor = prefs.edit();
+                            preferencesEditor.putString("clientID", clientID);
+                            preferencesEditor.putString("senderID", senderID );
+                            preferencesEditor.commit();
+
                             Log.e("data:" , clientID + " " + senderID);
-                            GCMCommonUtils.UserID = clientID;
-                            GCMCommonUtils.SenderID = senderID;
-                            GCMCommonUtils.Name = clientID;
-                            currentuser.setText(GCMCommonUtils.SenderID);
+                            currentuser.setText(senderID);
                             startRegistrationService(true, false);
                         }
                     })
@@ -223,25 +231,26 @@ public class MainActivity extends Activity {
 
     private boolean sendChatMessage() {
         adp.add(new ChatMessage(false, chatText.getText().toString()));
-
-
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    SharedPreferences prefs = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);;
+
                     // Create a new HttpClient and Post Header
                     HttpClient httpclient = new DefaultHttpClient();
                     HttpPost httppost = new HttpPost(GCMCommonUtils.SERVER_URL);
                     // Add your data
                     List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                    nameValuePairs.add(new BasicNameValuePair("UserID", GCMCommonUtils.SenderID));
+                    nameValuePairs.add(new BasicNameValuePair("UserID", prefs.getString("senderID","Error")));
+                    /// name has message her
                     nameValuePairs.add(new BasicNameValuePair("Name", chatText.getText().toString()));
                     httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                     // Execute HTTP Post Request
                     HttpResponse response = httpclient.execute(httppost);
 
-                    Log.e("POST SEND", response.toString());
+                    Log.e("POST SEND", response.toString() + " to" + prefs.getString("senderID","Error"));
 
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());

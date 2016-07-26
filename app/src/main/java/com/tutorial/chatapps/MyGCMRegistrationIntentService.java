@@ -32,14 +32,13 @@ public class MyGCMRegistrationIntentService extends IntentService {
     private static final int BACKOFF_MILLI_SECONDS = 500;
     private static final Random random = new Random();
     SharedPreferences sharedPreferences;
-
     public MyGCMRegistrationIntentService() {
         super(TAG);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
         Intent registrationComplete = new Intent(GCMSharedPreferences.REGISTRATION_COMPLETE);
         registrationComplete.putExtra("prefix", "");
         String token = sharedPreferences.getString(GCMSharedPreferences.REG_ID, "");
@@ -64,7 +63,7 @@ public class MyGCMRegistrationIntentService extends IntentService {
                 //As this project is only about GCM notification, we can clear the sharedpreferences altogether
                 sharedPreferences.edit().clear().apply();
                 //un-register from server
-                unregisterFromServer(GCMCommonUtils.UserID);
+                unregisterFromServer(sharedPreferences.getString("clientID","Error"));
 
             } else {
                 if (!intent.getExtras().getBoolean("tokenRefreshed") && !token.equals("")) {
@@ -116,8 +115,9 @@ public class MyGCMRegistrationIntentService extends IntentService {
         //Map<String, String> params = new HashMap<String, String>();
         //params.put("UserId", "token");
         //params.put("Name",instanceID.toString());
+        sharedPreferences = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
 
-        String params = "UserId="+GCMCommonUtils.UserID+"&Name="+GCMCommonUtils.Name + "&token="+token;
+        String params = "UserId="+sharedPreferences.getString("clientID","Error")+"&Name="+sharedPreferences.getString("clientID","Error") + "&token="+token;
 //        params.put("name", name);
 //        params.put("email", email);
 
@@ -166,7 +166,9 @@ public class MyGCMRegistrationIntentService extends IntentService {
     private void unregisterFromServer(final String regId) {
         // Log.i(TAG, "registering device (regId = " + regId + ")");
         String serverUrl = GCMCommonUtils.SERVER_URL;
-        String params = "UserID=" + GCMCommonUtils.UserID + "&Token=delete";
+        sharedPreferences = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+
+        String params = "UserID=" + sharedPreferences.getString("clientID","Error") + "&Token=delete";
 
         long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
         // Once GCM returns a registration id, we need to unregister on our server
@@ -244,7 +246,7 @@ public class MyGCMRegistrationIntentService extends IntentService {
             int status = conn.getResponseCode();
             Log.e("status", ""+status);
             if (status == 409) {
-                delete(endpoint,GCMCommonUtils.UserID);
+                delete(endpoint,"token=delete&"+params);
             }
             if (status != 201) {
                 throw new IOException("Post failed with error code " + status);
