@@ -254,7 +254,7 @@ public class MainActivity extends Activity {
             }
         });
         thread.start();
-        //chatText.setText("");
+        chatText.setText("");
         return true;
     }
 
