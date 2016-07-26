@@ -1,6 +1,14 @@
 package com.tutorial.chatapps;
 
 import android.app.Activity;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.app.Activity;
+import android.view.Menu;
+import android.util.Log;
+import android.provider.ContactsContract;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,6 +37,7 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -49,7 +58,14 @@ import java.util.Vector;
 
 
 public class MainActivity extends Activity {
-	  
+
+    enum CommandType
+    {
+        ContactCMD,
+        CalendarCMD,
+        MapCMD,
+    }
+
     private static final String TAG = "ChatActivity";
 
     private ChatArrayAdapter adp;
@@ -225,14 +241,58 @@ public class MainActivity extends Activity {
             }
         });
         thread.start();
-        chatText.setText("");
+        //chatText.setText("");
         return true;
     }
 
     public boolean receiveChatMessage(String message){
         adp.add(new ChatMessage(false, message ));
+
         return true;
     }
+
+    private void ParseLogic(CommandType cmd)
+    {
+        switch(cmd){
+            case ContactCMD:
+                //add code for updating the
+                String contact =  getPhoneNumber("Ashish", MainActivity.this);
+                chatText.setText(contact);
+                break;
+            case CalendarCMD:
+                break;
+            case MapCMD:
+                break;
+        }
+    }
+
+    private void showContactList(String name, Context context)
+    {
+        String phoneNumber =  getPhoneNumber(name , context);
+    }
+
+    public String getPhoneNumber(String name, Context context) {
+        String ret = null;
+        String selection = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ='" + name + "'";
+        String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+        try {
+            Cursor c = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    projection, selection, null, null);
+            if (c.moveToFirst()) {
+                ret = c.getString(0);
+            }
+            c.close();
+            if (ret == null)
+                ret = "Unsaved";
+        } catch (Exception ex) {
+            ret = "Unsaved";
+        } finally {
+            return ret;
+        }
+    }
+
+
+
 
     private void setSuggestionTextItems(Vector<String> textSuggestions){
         this.index = 0;
