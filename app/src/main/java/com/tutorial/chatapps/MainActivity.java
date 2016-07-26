@@ -122,7 +122,7 @@ public class MainActivity extends Activity {
         };
 
         currentuser = (TextView)findViewById(R.id.textView1);
-        currentuser.setText("Anonymous");
+        currentuser.setText(GCMCommonUtils.SenderID);
         currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         suggestionsImage = (ImageView)findViewById(R.id.imageView2);
 
@@ -148,6 +148,7 @@ public class MainActivity extends Activity {
                             GCMCommonUtils.UserID = clientID;
                             GCMCommonUtils.SenderID = senderID;
                             GCMCommonUtils.Name = clientID;
+                            currentuser.setText(GCMCommonUtils.SenderID);
                             startRegistrationService(true, false);
                         }
                     })
@@ -254,12 +255,26 @@ public class MainActivity extends Activity {
     public boolean receiveChatMessage(String message){
 
         String[] receivedMsg = message.split("\\$");
+        String chatMessage = receivedMsg[0];
+        // try to get the command control if present in the message
+        if(message.split("\\~").length > 1)
+        {
+            // means some command text has come
+            String[] receivedCommand = message.split("\\~");
+            chatMessage = receivedCommand[0];
+            String command = receivedCommand[1].split("\\:")[0];
+            String commandValue = receivedCommand[1].split("\\:")[1];
+            ParseLogic(command,commandValue);
+            Log.i("command", command);
+            Log.i("commandValue",commandValue);
+        }
+
 //        Log.i("message", message);
 //        Log.i("split messag", receivedMsg[0]);
 
         if(receivedMsg.length > 0)
         {
-            adp.add(new ChatMessage(true, receivedMsg[0] ));
+            adp.add(new ChatMessage(true, chatMessage ));
         }
 
         if(receivedMsg.length > 1)
@@ -283,17 +298,11 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    private void ParseLogic(CommandType cmd) {
-        switch (cmd) {
-            case ContactCMD:
-                //add code for updating the
-                String contact = getPhoneNumber("Ashish", MainActivity.this);
-                chatText.setText(contact);
-                break;
-            case CalendarCMD:
-                break;
-            case MapCMD:
-                break;
+    private void ParseLogic(String cmd , String valueParam) {
+        if(cmd == "Contact")
+        {
+            String contact = getPhoneNumber(valueParam, MainActivity.this);
+            chatText.setText(contact);
         }
     }
 
@@ -303,7 +312,9 @@ public class MainActivity extends Activity {
 
     public String getPhoneNumber(String name, Context context) {
         String ret = null;
-        String selection = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ='" + name + "'";
+        String selection = "(("+ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ='" + name + "') OR"
+               +"("+ ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY + " ='" + name + "') OR" +
+                "("+ ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_ALTERNATIVE + " ='" + name + "'))";
         String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
         try {
             Cursor c = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
