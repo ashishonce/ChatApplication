@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.util.Log;
@@ -21,8 +20,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.graphics.Color;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.TypedValue;
@@ -32,14 +29,11 @@ import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
@@ -54,19 +48,12 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.w3c.dom.Text;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import android.widget.Spinner;
 import android.widget.ViewSwitcher;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Vector;
-
-import static android.app.PendingIntent.getActivity;
-
 
 public class MainActivity extends Activity {
 
