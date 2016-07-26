@@ -29,7 +29,9 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -203,7 +205,7 @@ public class MainActivity extends Activity {
         suggestionList = new Vector<String>();
         this.initializeTextSwitcher();
 
-        suggestions.setVisibility(LinearLayout.GONE);
+        hideSuggestions();
     }
 
     public void startRegistrationService(boolean reg, boolean tkr) {
@@ -273,7 +275,7 @@ public class MainActivity extends Activity {
 
             suggestionList.clear();
             this.setSuggestionTextItems(temp);
-            suggestions.setVisibility(LinearLayout.VISIBLE);
+            showSuggestions();
 
         }
         else
@@ -352,10 +354,18 @@ public class MainActivity extends Activity {
             }
         });
 
+        TextView view = (TextView) textSwitcher.getCurrentView();
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        view = (TextView) textSwitcher.getNextView();
+        params = view.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+
         textSwitcher.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeRight() {
                 textSwitcher.setInAnimation(Slide.inFromLeftAnimation());
                 textSwitcher.setOutAnimation(Slide.outToRightAnimation());
+
                 index--;
 
                 if (size > 0 && index >=0){
@@ -363,6 +373,9 @@ public class MainActivity extends Activity {
                     suggestedText = suggestionList.elementAt(index);
                     if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
                     if (index < size - 1) rightArrow.setVisibility(View.VISIBLE);
+                }
+                else if (index < 0){
+                    hideSuggestions();
                 }
                 else {
                     index++;
@@ -372,6 +385,7 @@ public class MainActivity extends Activity {
             public void onSwipeLeft() {
                 textSwitcher.setInAnimation(Slide.inFromRightAnimation());
                 textSwitcher.setOutAnimation(Slide.outToLeftAnimation());
+
                 index++;
 
                 if (size > 0 && index < size){
@@ -380,6 +394,9 @@ public class MainActivity extends Activity {
                     if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
                     if (index > 0) leftArrow.setVisibility(View.VISIBLE);
                 }
+                else if (index == size){
+                    hideSuggestions();
+                }
                 else {
                     index--;
                 }
@@ -387,6 +404,7 @@ public class MainActivity extends Activity {
 
             public void onClick() {
                 chatText.setText(suggestedText);
+                hideSuggestions();
             }
         });
     }
