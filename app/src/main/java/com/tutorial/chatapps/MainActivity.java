@@ -163,6 +163,7 @@ public class MainActivity extends Activity {
         list.setAdapter(adp);
 
         chatText = (EditText) findViewById(R.id.chat_text);
+        chatText.setBackgroundDrawable(getResources().getDrawable(R.drawable.back));
         chatText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
