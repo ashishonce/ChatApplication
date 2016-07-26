@@ -111,7 +111,20 @@ public class MainActivity extends Activity {
             }
         };
 
-        startRegistrationService(true, false);
+        // initialization
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!prefs.getBoolean("firstTime", false)) {
+            // <---- run your one time code here
+            startRegistrationService(true, false);
+
+
+            // mark first time has runned.
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstTime", true);
+            editor.commit();
+        }
+
         String[] items = new String[] { "Contact1", "Contact2", "Contact3" };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
