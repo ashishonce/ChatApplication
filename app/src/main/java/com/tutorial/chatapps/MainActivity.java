@@ -121,7 +121,6 @@ public class MainActivity extends Activity {
             }
         };
 
-        startRegistrationService(true, false);
         currentuser = (TextView)findViewById(R.id.textView1);
         currentuser.setText("Anonymous");
         currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
