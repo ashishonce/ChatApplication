@@ -109,7 +109,6 @@ public class MainActivity extends Activity {
             editor.commit();
         }
 
-        startRegistrationService(true, false);
         String[] items = new String[] { "Contact1", "Contact2", "Contact3" };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
