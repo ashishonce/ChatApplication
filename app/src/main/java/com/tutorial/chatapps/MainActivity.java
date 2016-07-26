@@ -123,12 +123,11 @@ public class MainActivity extends Activity {
             }
         };
 
-        startRegistrationService(true, false);
         currentuser = (TextView)findViewById(R.id.textView1);
         currentuser.setText("Anonymous");
         currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         suggestionsImage = (ImageView)findViewById(R.id.imageView2);
-
+        suggestionsImage.setVisibility(View.INVISIBLE);
         // initialization
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -166,6 +165,7 @@ public class MainActivity extends Activity {
         list.setAdapter(adp);
 
         chatText = (EditText) findViewById(R.id.chat_text);
+        chatText.setBackgroundDrawable(getResources().getDrawable(R.drawable.back));
         chatText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -276,11 +276,10 @@ public class MainActivity extends Activity {
             suggestionList.clear();
             this.setSuggestionTextItems(temp);
             showSuggestions();
-
         }
         else
         {
-            suggestions.setVisibility(LinearLayout.GONE);
+            hideSuggestions();
         }
 
         return true;
@@ -368,7 +367,7 @@ public class MainActivity extends Activity {
 
                 index--;
 
-                if (size > 0 && index >=0){
+                if (size > 0 && index >= 0) {
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
                     if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
@@ -388,7 +387,7 @@ public class MainActivity extends Activity {
 
                 index++;
 
-                if (size > 0 && index < size){
+                if (size > 0 && index < size) {
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
                     if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
@@ -411,7 +410,7 @@ public class MainActivity extends Activity {
 
     private void hideSuggestions(){
         suggestionsImage.setVisibility(View.INVISIBLE);
-        suggestions.setVisibility(View.INVISIBLE);
+        suggestions.setVisibility(View.GONE);
     }
 
     private void showSuggestions() {
