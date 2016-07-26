@@ -3,22 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
+    android:background="#FFFFFF"
   >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="visible"
-        android:id="@+id/suggestionsView">
-        <TextSwitcher
-            android:id="@+id/switcher"
-            android:textColor="#FFFFFF"
-            android:layout_centerInParent="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" />
-    </LinearLayout>
-
     <Spinner
         android:id="@+id/dynamic_spinner"
         android:layout_width="wrap_content"
@@ -32,8 +18,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="80dp"
 
-        android:layout_below="@+id/dynamic_spinner" />
-    
+        android:layout_below="@+id/dynamic_spinner"
+        android:textColor="#BBFFDC"/>
+
+
+
     <RelativeLayout
          android:id="@+id/form"
          android:layout_height="wrap_content"
@@ -41,9 +30,26 @@
          android:layout_alignParentBottom="true"
          android:layout_alignParentLeft="true"
          android:orientation="vertical"
-        android:layout_below="@+id/dynamic_spinner">
-        
-        
+        android:layout_below="@+id/listview"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:id="@+id/suggestionsView"
+            android:background="#774568"
+            android:layout_above="@+id/chat_text"
+            >
+            <TextSwitcher
+                android:id="@+id/switcher"
+                android:textColor="#BBFFDD"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
         <EditText
          android:layout_height="wrap_content"
          android:layout_width="wrap_content"
