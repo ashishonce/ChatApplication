@@ -4,6 +4,8 @@
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">ChatAppsdemo</string>
     <string name ="action_settings">Settings</string>
+    <string name="leftArrow">&lt;&lt;</string>
+    <string name="rightArrow">&gt;&gt;</string>
     <string-array name="contacts_array">
         <item>Contact1</item>
         <item>Contact2</item>

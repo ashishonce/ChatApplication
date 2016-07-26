@@ -36,6 +36,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,12 +78,14 @@ public class MainActivity extends Activity {
     private ListView list;
     private EditText chatText;
     private Button send;
-    private LinearLayout suggestions;
+    private RelativeLayout suggestions;
     private TextSwitcher textSwitcher;
     private Vector<String> suggestionList;
     private int index;
     private int size;
     private String suggestedText;
+    private TextView leftArrow;
+    private TextView rightArrow;
 
     Intent intent;
     private boolean side = false;
@@ -117,7 +120,6 @@ public class MainActivity extends Activity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (!prefs.getBoolean("firstTime", false)) {
-            // <---- run your one time code here
 
             // mark first time has runned.
             SharedPreferences.Editor editor = prefs.edit();
@@ -214,21 +216,18 @@ public class MainActivity extends Activity {
 
         });
 
-        suggestions = (LinearLayout) findViewById(R.id.suggestionsView);
+        suggestions = (RelativeLayout) findViewById(R.id.suggestionsView);
 
         textSwitcher = (TextSwitcher) findViewById(R.id.switcher);
 
-        suggestionList = new Vector<String>();
+        leftArrow = (TextView) findViewById(R.id.leftArrow);
 
+        rightArrow = (TextView) findViewById(R.id.rightArrow);
+
+        suggestionList = new Vector<String>();
         this.initializeTextSwitcher();
 
-        Vector<String> temp = new Vector<String>();
-        temp.add("Text Content 1");
-        temp.add("Text Content 2");
-        temp.add("Text Content 3");
-        temp.add("Text Content 4");
-
-        this.setSuggestionTextItems(temp);
+        suggestions.setVisibility(LinearLayout.GONE);
     }
 
     public void startRegistrationService(boolean reg, boolean tkr) {
@@ -275,8 +274,33 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    public boolean receiveChatMessage(String message) {
-        adp.add(new ChatMessage(false, message));
+    public boolean receiveChatMessage(String message){
+        String[] receivedMsg = message.split("\\$");
+        Log.i("message", message);
+        Log.i("split messag", receivedMsg[0]);
+
+        if(receivedMsg.length > 0)
+        {
+            adp.add(new ChatMessage(false, receivedMsg[0] ));
+        }
+
+        if(receivedMsg.length > 1)
+        {
+            Vector<String> temp = new Vector<String>();
+            for( int i=1;i <receivedMsg.length;i++ )
+            {
+                temp.add(receivedMsg[i]);
+            }
+
+            suggestionList.clear();
+            this.setSuggestionTextItems(temp);
+            suggestions.setVisibility(LinearLayout.VISIBLE);
+
+        }
+        else
+        {
+            suggestions.setVisibility(LinearLayout.GONE);
+        }
 
         return true;
     }
@@ -328,6 +352,10 @@ public class MainActivity extends Activity {
             textSwitcher.setText(suggestionList.elementAt(index));
             suggestedText = suggestionList.elementAt(index);
         }
+
+        if (size > 1){
+            rightArrow.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initializeTextSwitcher() {
@@ -339,8 +367,8 @@ public class MainActivity extends Activity {
             public View makeView() {
                 TextView myText = new TextView(MainActivity.this);
                 myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                myText.setTextSize(24);
-                myText.setTextColor(Color.WHITE);
+                myText.setTextSize(18);
+                myText.setTextColor(Color.BLACK);
                 return myText;
             }
         });
@@ -349,24 +377,32 @@ public class MainActivity extends Activity {
             public void onSwipeRight() {
                 textSwitcher.setInAnimation(Slide.inFromLeftAnimation());
                 textSwitcher.setOutAnimation(Slide.outToRightAnimation());
+                index--;
 
-                if (size > 0) {
-                    index--;
-                    index = index < 0 ? size - 1 : index;
+                if (size > 0 && index >=0){
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
+                    if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
+                    if (index < size - 1) rightArrow.setVisibility(View.VISIBLE);
+                }
+                else {
+                    index++;
                 }
             }
 
             public void onSwipeLeft() {
                 textSwitcher.setInAnimation(Slide.inFromRightAnimation());
                 textSwitcher.setOutAnimation(Slide.outToLeftAnimation());
+                index++;
 
-                if (size > 0) {
-                    index++;
-                    index = index % size;
+                if (size > 0 && index < size){
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
+                    if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
+                    if (index > 0) leftArrow.setVisibility(View.VISIBLE);
+                }
+                else {
+                    index--;
                 }
             }
 
