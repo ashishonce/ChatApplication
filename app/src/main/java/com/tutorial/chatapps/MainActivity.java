@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,12 +76,14 @@ public class MainActivity extends Activity {
     private ListView list;
     private EditText chatText;
     private Button send;
-    private LinearLayout suggestions;
+    private RelativeLayout suggestions;
     private TextSwitcher textSwitcher;
     private Vector<String> suggestionList;
     private int index;
     private int size;
     private String suggestedText;
+    private TextView leftArrow;
+    private TextView rightArrow;
 
     Intent intent;
     private boolean side = false;
@@ -195,15 +198,27 @@ public class MainActivity extends Activity {
         	
 		});
 
-        suggestions = (LinearLayout) findViewById(R.id.suggestionsView);
+        suggestions = (RelativeLayout) findViewById(R.id.suggestionsView);
 
         textSwitcher = (TextSwitcher) findViewById(R.id.switcher);
+
+        leftArrow = (TextView) findViewById(R.id.leftArrow);
+
+        rightArrow = (TextView) findViewById(R.id.rightArrow);
 
         suggestionList = new Vector<String>();
 
         this.initializeTextSwitcher();
 
         suggestions.setVisibility(LinearLayout.GONE);
+
+        Vector<String> temp = new Vector<String>();
+        temp.add("how are you?");
+        temp.add("I am fine");
+        temp.add("what are you doing today?");
+
+        setSuggestionTextItems(temp);
+        showSuggestions();
     }
 
     public void startRegistrationService(boolean reg, boolean tkr) {
@@ -271,7 +286,7 @@ public class MainActivity extends Activity {
         }
         else
         {
-            suggestions.setVisibility(LinearLayout.GONE);
+            //suggestions.setVisibility(LinearLayout.GONE);
         }
 
 
@@ -329,6 +344,10 @@ public class MainActivity extends Activity {
             textSwitcher.setText(suggestionList.elementAt(index));
             suggestedText = suggestionList.elementAt(index);
         }
+
+        if (size > 1){
+            rightArrow.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initializeTextSwitcher(){
@@ -340,8 +359,8 @@ public class MainActivity extends Activity {
             public View makeView() {
                 TextView myText = new TextView(MainActivity.this);
                 myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                myText.setTextSize(24);
-                myText.setTextColor(Color.WHITE);
+                myText.setTextSize(18);
+                myText.setTextColor(Color.BLACK);
                 return myText;
             }
         });
@@ -350,24 +369,32 @@ public class MainActivity extends Activity {
             public void onSwipeRight(){
                 textSwitcher.setInAnimation(Slide.inFromLeftAnimation());
                 textSwitcher.setOutAnimation(Slide.outToRightAnimation());
+                index--;
 
-                if (size > 0){
-                    index--;
-                    index = index < 0 ? size - 1 : index;
+                if (size > 0 && index >=0){
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
+                    if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
+                    if (index < size - 1) rightArrow.setVisibility(View.VISIBLE);
+                }
+                else {
+                    index++;
                 }
             }
 
             public void onSwipeLeft(){
                 textSwitcher.setInAnimation(Slide.inFromRightAnimation());
                 textSwitcher.setOutAnimation(Slide.outToLeftAnimation());
+                index++;
 
-                if (size > 0){
-                    index++;
-                    index = index % size;
+                if (size > 0 && index < size){
                     textSwitcher.setText(suggestionList.elementAt(index));
                     suggestedText = suggestionList.elementAt(index);
+                    if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
+                    if (index > 0) leftArrow.setVisibility(View.VISIBLE);
+                }
+                else {
+                    index--;
                 }
             }
 

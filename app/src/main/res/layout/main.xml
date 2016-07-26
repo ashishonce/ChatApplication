@@ -32,22 +32,42 @@
          android:orientation="vertical"
         >
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:visibility="visible"
             android:id="@+id/suggestionsView"
-            android:background="#774568"
+            android:background="@layout/rectangle"
             android:layout_above="@+id/chat_text"
             >
+            <TextView
+                android:id="@+id/leftArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:visibility="invisible"
+                android:textSize="18sp"
+                android:text="@string/leftArrow"/>
+
             <TextSwitcher
                 android:id="@+id/switcher"
-                android:textColor="#BBFFDD"
+                android:textColor="#000000"
 
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+
+            <TextView
+                android:id="@+id/rightArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:visibility="invisible"
+                android:textSize="18sp"
+                android:text="@string/rightArrow"/>
+
+        </RelativeLayout>
 
         <EditText
          android:layout_height="wrap_content"
