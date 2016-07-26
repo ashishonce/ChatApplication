@@ -13,6 +13,7 @@ public class GCMSharedPreferences {
     public static final String GOT_TOKEN_FROM_GCM = "GOT_TOKEN_FROM_GCM";
     public static final String REGISTRATION_COMPLETE = "REGISTRATION_COMPLETE";
     public static final String REG_ID = "";
+    public static final boolean Init = true;
     public static BroadcastReceiver mRegistrationBroadcastReceiver;
 
 }

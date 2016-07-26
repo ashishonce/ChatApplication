@@ -16,11 +16,11 @@ public class GCMCommonUtils {
     // put your server registration url here, must end with a /
     public static final String SERVER_URL = "http://makemesmarterapp.azurewebsites.net/api/Users";
 
-    public static final String UserID = "1004";
+    public static String UserID = "1005";
 
-    public static final String SenderID = "1003";
+    public static String SenderID = "1003";
 
-    public static final String Name = "Mibe";
+    public static String Name = "Mibe";
 
     public static String notificationType[] = {"default", "type1", "message"};
 
