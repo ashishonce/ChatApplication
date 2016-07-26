@@ -8,10 +8,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -20,8 +22,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,9 +41,11 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.util.ArrayList;
 import android.widget.Spinner;
+import android.widget.ViewSwitcher;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 
 public class MainActivity extends Activity {
@@ -53,7 +59,12 @@ public class MainActivity extends Activity {
     private ListView list;
     private EditText chatText;
     private Button send;
-
+    private LinearLayout suggestions;
+    private TextSwitcher textSwitcher;
+    private Vector<String> suggestionList;
+    private int index;
+    private int size;
+    private String suggestedText;
 
     Intent intent;
     private boolean side = false;
@@ -155,7 +166,23 @@ public class MainActivity extends Activity {
         	
         	
 		});
-        
+
+        suggestions = (LinearLayout) findViewById(R.id.suggestionsView);
+
+        textSwitcher = (TextSwitcher) findViewById(R.id.switcher);
+
+        suggestionList = new Vector<String>();
+
+        this.initializeTextSwitcher();
+
+        Vector<String> temp = new Vector<String>();
+        temp.add("Text Content 1");
+        temp.add("Text Content 2");
+        temp.add("Text Content 3");
+        temp.add("Text Content 4");
+
+        this.setSuggestionTextItems(temp);
+
     }
 
     public void startRegistrationService(boolean reg, boolean tkr) {
@@ -205,5 +232,73 @@ public class MainActivity extends Activity {
     public boolean receiveChatMessage(String message){
         adp.add(new ChatMessage(false, message ));
         return true;
+    }
+
+    private void setSuggestionTextItems(Vector<String> textSuggestions){
+        this.index = 0;
+        this.suggestionList.addAll(textSuggestions);
+        size = this.suggestionList.size();
+        if (size > 0){
+            textSwitcher.setText(suggestionList.elementAt(index));
+            suggestedText = suggestionList.elementAt(index);
+        }
+    }
+
+    private void initializeTextSwitcher(){
+        size = 0;
+        textSwitcher = (TextSwitcher) findViewById(R.id.switcher);
+
+        textSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
+
+            public View makeView() {
+                TextView myText = new TextView(MainActivity.this);
+                myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                myText.setTextSize(24);
+                myText.setTextColor(Color.WHITE);
+                return myText;
+            }
+        });
+
+        textSwitcher.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this){
+            public void onSwipeRight(){
+                textSwitcher.setInAnimation(Slide.inFromLeftAnimation());
+                textSwitcher.setOutAnimation(Slide.outToRightAnimation());
+
+                if (size > 0){
+                    index--;
+                    index = index < 0 ? size - 1 : index;
+                    textSwitcher.setText(suggestionList.elementAt(index));
+                    suggestedText = suggestionList.elementAt(index);
+                }
+            }
+
+            public void onSwipeLeft(){
+                textSwitcher.setInAnimation(Slide.inFromRightAnimation());
+                textSwitcher.setOutAnimation(Slide.outToLeftAnimation());
+
+                if (size > 0){
+                    index++;
+                    index = index % size;
+                    textSwitcher.setText(suggestionList.elementAt(index));
+                    suggestedText = suggestionList.elementAt(index);
+                }
+            }
+
+            public void onClick(){
+                chatText.setText(suggestedText);
+            }
+        });
+    }
+
+    private void hideSuggestions(){
+        suggestions.setVisibility(View.INVISIBLE);
+    }
+
+    private void showSuggestions(){
+        suggestions.setVisibility(View.VISIBLE);
+    }
+
+    private void deleteSuggestions(){
+        suggestionList.removeAllElements();
     }
 }
