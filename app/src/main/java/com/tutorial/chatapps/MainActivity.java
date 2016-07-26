@@ -1,11 +1,14 @@
 package com.tutorial.chatapps;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.util.Log;
 import android.provider.ContactsContract;
@@ -60,8 +63,7 @@ import java.util.Vector;
 
 public class MainActivity extends Activity {
 
-    enum CommandType
-    {
+    enum CommandType {
         ContactCMD,
         CalendarCMD,
         MapCMD,
@@ -70,9 +72,9 @@ public class MainActivity extends Activity {
     private static final String TAG = "ChatActivity";
 
     private ChatArrayAdapter adp;
-    private  ChatArrayAdapter adp0;
-    private  ChatArrayAdapter adp1;
-    private  ChatArrayAdapter adp2;
+    private ChatArrayAdapter adp0;
+    private ChatArrayAdapter adp1;
+    private ChatArrayAdapter adp2;
     private ListView list;
     private EditText chatText;
     private Button send;
@@ -110,7 +112,7 @@ public class MainActivity extends Activity {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-               receiveChatMessage(intent.getStringExtra("Message"));
+                receiveChatMessage(intent.getStringExtra("Message"));
             }
         };
 
@@ -118,16 +120,34 @@ public class MainActivity extends Activity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (!prefs.getBoolean("firstTime", false)) {
-            // <---- run your one time code here
-            startRegistrationService(true, false);
 
             // mark first time has runned.
             SharedPreferences.Editor editor = prefs.edit();
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialoglayout = inflater.inflate(R.layout.register, null);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Register")
+                    .setView(dialoglayout)
+                    .setMessage("Please choose your destiny")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String clientID = ((EditText)dialoglayout.findViewById(R.id.UserID)).getText().toString();
+                            String senderID = ((EditText)dialoglayout.findViewById(R.id.SenderID)).getText().toString();
+                            Log.e("data:" , clientID + " " + senderID);
+                            GCMCommonUtils.UserID = clientID;
+                            GCMCommonUtils.SenderID = senderID;
+                            GCMCommonUtils.Name = clientID;
+                            startRegistrationService(true, false);
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
             editor.putBoolean("firstTime", true);
             editor.commit();
         }
 
-        String[] items = new String[] { "Contact1", "Contact2", "Contact3" };
+        String[] items = new String[]{"Contact1", "Contact2", "Contact3"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, items);
@@ -142,12 +162,10 @@ public class MainActivity extends Activity {
                 if (position == 0) {
                     adp = adp0;
                     list.setAdapter(adp0);
-                }
-                else if(position ==1) {
+                } else if (position == 1) {
                     adp = adp1;
                     list.setAdapter(adp1);
-                }
-                else if(position == 2) {
+                } else if (position == 2) {
                     adp = adp2;
                     list.setAdapter(adp2);
                 }
@@ -189,14 +207,14 @@ public class MainActivity extends Activity {
         list.setAdapter(adp);
 
         adp.registerDataSetObserver(new DataSetObserver() {
-        	
-        	public void OnChanged(){
-        		super.onChanged();
-        		list.setSelection(adp.getCount() -1);
-        	}
-        	
-        	
-		});
+
+            public void OnChanged() {
+                super.onChanged();
+                list.setSelection(adp.getCount() - 1);
+            }
+
+
+        });
 
         suggestions = (RelativeLayout) findViewById(R.id.suggestionsView);
 
@@ -207,7 +225,6 @@ public class MainActivity extends Activity {
         rightArrow = (TextView) findViewById(R.id.rightArrow);
 
         suggestionList = new Vector<String>();
-
         this.initializeTextSwitcher();
 
         suggestions.setVisibility(LinearLayout.GONE);
@@ -216,7 +233,7 @@ public class MainActivity extends Activity {
     public void startRegistrationService(boolean reg, boolean tkr) {
 
         if (GCMCommonUtils.checkPlayServices(this)) {
-            Toast.makeText(this, "Background service started...", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Registeration service started...", Toast.LENGTH_LONG).show();
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, MyGCMRegistrationIntentService.class);
             intent.putExtra("register", reg);
@@ -226,10 +243,10 @@ public class MainActivity extends Activity {
 
     }
 
-    private boolean sendChatMessage(){
+    private boolean sendChatMessage() {
         adp.add(new ChatMessage(true, chatText.getText().toString()));
 
-        Thread thread = new Thread(new Runnable(){
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -245,7 +262,7 @@ public class MainActivity extends Activity {
                     // Execute HTTP Post Request
                     HttpResponse response = httpclient.execute(httppost);
 
-                    Log.e("POSTSEND",response.toString());
+                    Log.e("POST SEND", response.toString());
 
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
@@ -285,16 +302,14 @@ public class MainActivity extends Activity {
             suggestions.setVisibility(LinearLayout.GONE);
         }
 
-
         return true;
     }
 
-    private void ParseLogic(CommandType cmd)
-    {
-        switch(cmd){
+    private void ParseLogic(CommandType cmd) {
+        switch (cmd) {
             case ContactCMD:
                 //add code for updating the
-                String contact =  getPhoneNumber("Ashish", MainActivity.this);
+                String contact = getPhoneNumber("Ashish", MainActivity.this);
                 chatText.setText(contact);
                 break;
             case CalendarCMD:
@@ -304,9 +319,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void showContactList(String name, Context context)
-    {
-        String phoneNumber =  getPhoneNumber(name , context);
+    private void showContactList(String name, Context context) {
+        String phoneNumber = getPhoneNumber(name, context);
     }
 
     public String getPhoneNumber(String name, Context context) {
@@ -330,13 +344,11 @@ public class MainActivity extends Activity {
     }
 
 
-
-
-    private void setSuggestionTextItems(Vector<String> textSuggestions){
+    private void setSuggestionTextItems(Vector<String> textSuggestions) {
         this.index = 0;
         this.suggestionList.addAll(textSuggestions);
         size = this.suggestionList.size();
-        if (size > 0){
+        if (size > 0) {
             textSwitcher.setText(suggestionList.elementAt(index));
             suggestedText = suggestionList.elementAt(index);
         }
@@ -346,7 +358,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void initializeTextSwitcher(){
+    private void initializeTextSwitcher() {
         size = 0;
         textSwitcher = (TextSwitcher) findViewById(R.id.switcher);
 
@@ -361,8 +373,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        textSwitcher.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this){
-            public void onSwipeRight(){
+        textSwitcher.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+            public void onSwipeRight() {
                 textSwitcher.setInAnimation(Slide.inFromLeftAnimation());
                 textSwitcher.setOutAnimation(Slide.outToRightAnimation());
                 index--;
@@ -378,7 +390,7 @@ public class MainActivity extends Activity {
                 }
             }
 
-            public void onSwipeLeft(){
+            public void onSwipeLeft() {
                 textSwitcher.setInAnimation(Slide.inFromRightAnimation());
                 textSwitcher.setOutAnimation(Slide.outToLeftAnimation());
                 index++;
@@ -394,21 +406,21 @@ public class MainActivity extends Activity {
                 }
             }
 
-            public void onClick(){
+            public void onClick() {
                 chatText.setText(suggestedText);
             }
         });
     }
 
-    private void hideSuggestions(){
+    private void hideSuggestions() {
         suggestions.setVisibility(View.INVISIBLE);
     }
 
-    private void showSuggestions(){
+    private void showSuggestions() {
         suggestions.setVisibility(View.VISIBLE);
     }
 
-    private void deleteSuggestions(){
+    private void deleteSuggestions() {
         suggestionList.removeAllElements();
     }
 }
