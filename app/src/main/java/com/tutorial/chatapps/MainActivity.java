@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.util.Log;
@@ -122,7 +123,7 @@ public class MainActivity extends Activity {
         };
 
         currentuser = (TextView)findViewById(R.id.textView1);
-        currentuser.setText("Anonymous");
+        //currentuser.setText(GCMCommonUtils.SenderID);
         currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         suggestionsImage = (ImageView)findViewById(R.id.imageView2);
 
@@ -148,6 +149,7 @@ public class MainActivity extends Activity {
                             GCMCommonUtils.UserID = clientID;
                             GCMCommonUtils.SenderID = senderID;
                             GCMCommonUtils.Name = clientID;
+                            currentuser.setText(GCMCommonUtils.SenderID);
                             startRegistrationService(true, false);
                         }
                     })
@@ -259,7 +261,8 @@ public class MainActivity extends Activity {
 
         if(receivedMsg.length > 0)
         {
-            adp.add(new ChatMessage(true, receivedMsg[0] ));
+            Log.i("message", receivedMsg[0]);
+            adp.add(new ChatMessage(true, receivedMsg[0]));
         }
 
         if(receivedMsg.length > 1)

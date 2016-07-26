@@ -166,7 +166,7 @@ public class MyGCMRegistrationIntentService extends IntentService {
     private void unregisterFromServer(final String regId) {
         // Log.i(TAG, "registering device (regId = " + regId + ")");
         String serverUrl = GCMCommonUtils.SERVER_URL;
-        String params = "UserID=" + GCMCommonUtils.UserID;
+        String params = "UserID=" + GCMCommonUtils.UserID + "&Token=delete";
 
         long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
         // Once GCM returns a registration id, we need to unregister on our server
@@ -243,6 +243,9 @@ public class MyGCMRegistrationIntentService extends IntentService {
             // handle the response
             int status = conn.getResponseCode();
             Log.e("status", ""+status);
+            if (status == 409) {
+                delete(endpoint,GCMCommonUtils.UserID);
+            }
             if (status != 201) {
                 throw new IOException("Post failed with error code " + status);
             }
@@ -264,7 +267,7 @@ public class MyGCMRegistrationIntentService extends IntentService {
         }
 
         String body = params;
-        Log.v(TAG, "deleting '" + body + "' to " + url);
+        Log.v(TAG, "Deleting '" + body + "' to " + url);
         byte[] bytes = body.getBytes();
         HttpURLConnection conn = null;
         try {
@@ -273,17 +276,16 @@ public class MyGCMRegistrationIntentService extends IntentService {
             conn.setDoOutput(true);
             conn.setUseCaches(false);
             conn.setFixedLengthStreamingMode(bytes.length);
-            conn.setRequestMethod("DELETE");
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type",
                     "application/x-www-form-urlencoded;charset=UTF-8");
             // post the request
-            conn.connect();
+            OutputStream out = conn.getOutputStream();
+            out.write(bytes);
+            out.close();
             // handle the response
             int status = conn.getResponseCode();
             Log.e("status", ""+status);
-            if (status != 200) {
-                throw new IOException("Delete failed with error code " + status);
-            }
         } finally {
             if (conn != null) {
                 conn.disconnect();
