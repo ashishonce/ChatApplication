@@ -211,14 +211,6 @@ public class MainActivity extends Activity {
         this.initializeTextSwitcher();
 
         suggestions.setVisibility(LinearLayout.GONE);
-
-        Vector<String> temp = new Vector<String>();
-        temp.add("how are you?");
-        temp.add("I am fine");
-        temp.add("what are you doing today?");
-
-        setSuggestionTextItems(temp);
-        showSuggestions();
     }
 
     public void startRegistrationService(boolean reg, boolean tkr) {
@@ -286,7 +278,7 @@ public class MainActivity extends Activity {
         }
         else
         {
-            //suggestions.setVisibility(LinearLayout.GONE);
+            suggestions.setVisibility(LinearLayout.GONE);
         }
 
 
