@@ -204,14 +204,6 @@ public class MainActivity extends Activity {
         this.initializeTextSwitcher();
 
         suggestions.setVisibility(LinearLayout.GONE);
-//        Vector<String> temp = new Vector<String>();
-//        temp.add("Text Content 1");
-//        temp.add("Text Content 2");
-//        temp.add("Text Content 3");
-//        temp.add("Text Content 4");
-//
-//        this.setSuggestionTextItems(temp);
-
     }
 
     public void startRegistrationService(boolean reg, boolean tkr) {
@@ -259,7 +251,6 @@ public class MainActivity extends Activity {
     }
 
     public boolean receiveChatMessage(String message){
-        message = message + "$ suggestion1 $ suggestion 2 $ suggestion1 $ suggestion 2";
         String[] receivedMsg = message.split("\\$");
 
         if(receivedMsg.length > 0)
