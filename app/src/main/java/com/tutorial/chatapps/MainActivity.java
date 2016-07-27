@@ -327,6 +327,9 @@ public class MainActivity extends Activity {
     private void setSuggestionTextItems(Vector<String> textSuggestions) {
         this.index = 0;
         this.suggestionList.addAll(textSuggestions);
+        rightArrow.setVisibility(View.INVISIBLE);
+        leftArrow.setVisibility(View.INVISIBLE);
+
         size = this.suggestionList.size();
         if (size > 0) {
             textSwitcher.setText(suggestionList.elementAt(index));
