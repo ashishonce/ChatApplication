@@ -1,5 +1,6 @@
 package com.tutorial.chatapps;
 
+import java.text.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -46,6 +47,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -304,6 +306,7 @@ public class MainActivity extends Activity {
         }
         else if(cmd.equals("Calendar"))
         {
+
             // we will hard code the daate for now.. also the calendar should be present
             suggestion = this.CalendarPicker(2016,06,27,00,00,00,2016,06,27,00,00,00,true);
         }
@@ -358,10 +361,16 @@ public class MainActivity extends Activity {
             if (cursor.getCount() > 0) {
                 if(!day && cursor.moveToFirst())
                     eventName= cursor.getString(1);
-                else
-                {
-                    while(cursor.moveToNext())
-                        eventName+= cursor.getString(1)+ "\n";
+                else {
+                    while (cursor.moveToNext()) {
+//                        Date startdate = new Date(Long.valueOf(cursor.getString(3)));
+                        String startdate = new SimpleDateFormat("H:mm").format(new Date(Long.valueOf(cursor.getString(3))));
+                        String enddate = new SimpleDateFormat("H:mm").format(new Date(Long.valueOf(cursor.getString(4))));
+                        //Date enddate = new Date(Long.valueOf(cursor.getString(4)));
+
+                        eventName += cursor.getString(1) + ": " + startdate + "-" + enddate  + "\n";
+
+                    }
                 }
 
 
@@ -374,7 +383,7 @@ public class MainActivity extends Activity {
         }
         finally{
 
-            return "Sumit's BirthDay : 27-07-2016";
+            return eventName;
         }
     }
 
