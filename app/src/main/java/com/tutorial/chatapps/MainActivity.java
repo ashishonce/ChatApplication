@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
     private ImageView suggestionsImage;
 
     private ListView list;
+    private ViewGroup.LayoutParams listParams;
     private EditText chatText;
     private Button send;
     private RelativeLayout suggestions;
@@ -149,6 +150,7 @@ public class MainActivity extends Activity {
 
         send = (Button) findViewById(R.id.btn);
         list = (ListView) findViewById(R.id.listview);
+        listParams = list.getLayoutParams();
         adp = new ChatArrayAdapter(getApplicationContext(), R.layout.chat);
         list.setAdapter(adp);
 
@@ -351,12 +353,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        TextView view = (TextView) textSwitcher.getCurrentView();
-        ViewGroup.LayoutParams params = view.getLayoutParams();
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        view = (TextView) textSwitcher.getNextView();
-        params = view.getLayoutParams();
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        textSwitcher.setMeasureAllChildren(false);
 
         textSwitcher.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeRight() {
