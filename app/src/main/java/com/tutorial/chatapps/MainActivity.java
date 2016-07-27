@@ -1,5 +1,6 @@
 package com.tutorial.chatapps;
 
+import java.text.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -11,8 +12,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.TypedValue;
@@ -43,6 +46,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -253,26 +258,6 @@ public class MainActivity extends Activity {
         String[] receivedMsg = message.split("\\$");
         String chatMessage = receivedMsg[0];
         // try to get the command control if present in the message
-        if(message.split("\\~").length > 1)
-        {
-            // means some command text has come
-            String[] receivedCommand = message.split("\\~");
-            chatMessage = receivedCommand[0];
-            String command = receivedCommand[1].split("\\:")[0];
-            String commandValue = receivedCommand[1].split("\\:")[1];
-            ParseLogic(command,commandValue);
-            Log.i("command", command);
-            Log.i("commandValue",commandValue);
-        }
-
-//        Log.i("message", message);
-//        Log.i("split messag", receivedMsg[0]);
-
-        if(receivedMsg.length > 0)
-        {
-            adp.add(new ChatMessage(true, chatMessage ));
-        }
-
         if (receivedMsg.length > 1) {
             Vector<String> temp = new Vector<String>();
             for (int i = 1; i < receivedMsg.length; i++) {
@@ -286,16 +271,125 @@ public class MainActivity extends Activity {
             hideSuggestions();
         }
 
+
+
+        if(message.split("\\~").length > 1)
+        {
+            // means some command text has come
+            String[] receivedCommand = message.split("\\~");
+            chatMessage = receivedCommand[0];
+            String command = receivedCommand[1].split("\\:")[0];
+            String commandValue = receivedCommand[1].split("\\:")[1];
+            this.ParseLogic(command,commandValue);
+            Log.i("command", command);
+            Log.i("commandValue",commandValue);
+        }
+
+//        Log.i("message", message);
+//        Log.i("split messag", receivedMsg[0]);
+
+        if(chatMessage != "")
+        {
+            adp.add(new ChatMessage(true, chatMessage ));
+        }
+
+
+
         return true;
     }
 
     private void ParseLogic(String cmd , String valueParam) {
-        if(cmd == "Contact")
+
+        String suggestion = "";
+        if( cmd.equals("Contact"))
+        { String clean = valueParam.replaceAll("\\P{Print}", "");
+            suggestion = valueParam + ":" + this.getPhoneNumber("Ashish", MainActivity.this);
+            //chatText.setText(valueParam + ":" + contact);
+        }
+        else if(cmd.equals("Calendar"))
         {
-            String contact = getPhoneNumber(valueParam, MainActivity.this);
-            chatText.setText(contact);
+
+            // we will hard code the daate for now.. also the calendar should be present
+            suggestion = this.CalendarPicker(2016,06,27,00,00,00,2016,06,27,00,00,00,true);
+        }
+
+        if(!suggestion.equals(""))
+        {
+            Vector<String> temp = new Vector<String>();
+            temp.add(suggestion);
+            suggestionList.clear();
+            this.setSuggestionTextItems(temp);
+            showSuggestions();
+        }
+        else
+        {
+            hideSuggestions();
+        }
+
+    }
+
+    public String CalendarPicker(int year, int month, int date, int hh, int mm,int ss,int endYear, int endMonth, int endDate, int endHH, int endMM,int endSS, Boolean day)
+    {
+        String eventName="";
+        Calendar c_start= Calendar.getInstance();
+        //c_start.set(2016,6,26,19,0,0); //Note that months start from 0 (January)
+        Calendar c_end= Calendar.getInstance();
+        // c_end.set(2016,6,26,19,30,0);
+        String[] projection = new String[] { "calendar_id", "title", "description",
+                "dtstart", "dtend", "eventLocation" };
+        String selection ="";
+
+        if(day)
+        {
+            c_start.set(year,month,date,hh,mm,ss);
+            c_end.set(year,month,date,23,59,59);
+        }
+        else{
+            c_start.set(year,month,date,hh,mm,ss);
+            c_end.set(endYear,endMonth,endDate,endHH,endMM,endSS);
+
+        }
+
+        long startTime = c_start.getTimeInMillis()-999;
+        long endTime= c_end.getTimeInMillis()+999;
+        selection = "(("+ CalendarContract.Events.DTSTART+" >= "+startTime+") AND ("+ CalendarContract.Events.DTEND +"<= "+endTime +"))";
+
+        try {
+            Cursor cursor = getContentResolver().query( Uri.parse("content://com.android.calendar/events") ,
+                    projection,
+                    selection,
+                    null,
+                    null);
+            if (cursor.getCount() > 0) {
+                if(!day && cursor.moveToFirst())
+                    eventName= cursor.getString(1);
+                else {
+                    while (cursor.moveToNext()) {
+//                        Date startdate = new Date(Long.valueOf(cursor.getString(3)));
+                        String startdate = new SimpleDateFormat("H:mm").format(new Date(Long.valueOf(cursor.getString(3))));
+                        String enddate = new SimpleDateFormat("H:mm").format(new Date(Long.valueOf(cursor.getString(4))));
+                        //Date enddate = new Date(Long.valueOf(cursor.getString(4)));
+
+                        eventName += cursor.getString(1) + ": " + startdate + "-" + enddate  + "\n";
+
+                    }
+                }
+
+
+            }
+            cursor.close();
+        }
+        catch(Exception ex)
+        {
+            return "Sumit's BirthDay : 27-07-2016";
+        }
+        finally{
+
+            return eventName;
         }
     }
+
+
 
     private void showContactList(String name, Context context) {
         String phoneNumber = getPhoneNumber(name, context);
@@ -303,6 +397,8 @@ public class MainActivity extends Activity {
 
     public String getPhoneNumber(String name, Context context) {
         String ret = null;
+
+        //String selection = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "='" + name+"'";
         String selection = "(("+ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ='" + name + "') OR"
                +"("+ ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY + " ='" + name + "') OR" +
                 "("+ ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_ALTERNATIVE + " ='" + name + "'))";
@@ -315,9 +411,9 @@ public class MainActivity extends Activity {
             }
             c.close();
             if (ret == null)
-                ret = "Unsaved";
+                ret = "";
         } catch (Exception ex) {
-            ret = "Unsaved";
+            ret = "";
         } finally {
             return ret;
         }

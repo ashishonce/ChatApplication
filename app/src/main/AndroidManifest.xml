@@ -11,6 +11,7 @@
         android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
 
     <uses-permission android:name="org.neurobin.aapps.pushnotificationgcmclient.permission.C2D_MESSAGE" />
     <!-- [START gcm_permission] -->
