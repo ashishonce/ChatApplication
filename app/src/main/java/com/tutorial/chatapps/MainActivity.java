@@ -398,10 +398,10 @@ public class MainActivity extends Activity {
     public String getPhoneNumber(String name, Context context) {
         String ret = null;
 
-        String selection = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "='" + name+"'";
-//        String selection = "(("+ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ='" + name + "') OR"
-//               +"("+ ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY + " ='" + name + "') OR" +
-//                "("+ ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_ALTERNATIVE + " ='" + name + "'))";
+        //String selection = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "='" + name+"'";
+        String selection = "(("+ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ='" + name + "') OR"
+               +"("+ ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY + " ='" + name + "') OR" +
+                "("+ ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_ALTERNATIVE + " ='" + name + "'))";
         String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
         try {
             Cursor c = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
