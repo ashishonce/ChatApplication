@@ -394,7 +394,26 @@ public class MainActivity extends Activity {
 
             public void onClick() {
                 chatText.setText(suggestedText);
-                hideSuggestions();
+                if (size > 1){
+                    if (index < size - 1){
+                        textSwitcher.setText(suggestionList.elementAt(index + 1));
+                        suggestedText = suggestionList.elementAt(index + 1);
+                        suggestionList.removeElementAt(index);
+                        size --;
+                        if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
+                    }
+                    else {
+                        textSwitcher.setText(suggestionList.elementAt(index - 1));
+                        suggestedText = suggestionList.elementAt(index - 1);
+                        suggestionList.removeElementAt(index);
+                        index--;
+                        size--;
+                        if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
+                    }
+                }
+                else {
+                    hideSuggestions();
+                }
             }
         });
     }
