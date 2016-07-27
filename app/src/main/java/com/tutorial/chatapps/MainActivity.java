@@ -66,6 +66,7 @@ public class MainActivity extends Activity {
     private ImageView suggestionsImage;
 
     private ListView list;
+    private ViewGroup.LayoutParams listParams;
     private EditText chatText;
     private Button send;
     private RelativeLayout suggestions;
@@ -154,6 +155,7 @@ public class MainActivity extends Activity {
 
         send = (Button) findViewById(R.id.btn);
         list = (ListView) findViewById(R.id.listview);
+        listParams = list.getLayoutParams();
         adp = new ChatArrayAdapter(getApplicationContext(), R.layout.chat);
         list.setAdapter(adp);
 
@@ -421,6 +423,9 @@ public class MainActivity extends Activity {
     private void setSuggestionTextItems(Vector<String> textSuggestions) {
         this.index = 0;
         this.suggestionList.addAll(textSuggestions);
+        rightArrow.setVisibility(View.INVISIBLE);
+        leftArrow.setVisibility(View.INVISIBLE);
+
         size = this.suggestionList.size();
         if (size > 0) {
             textSwitcher.setText(suggestionList.elementAt(index));
@@ -447,12 +452,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        TextView view = (TextView) textSwitcher.getCurrentView();
-        ViewGroup.LayoutParams params = view.getLayoutParams();
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        view = (TextView) textSwitcher.getNextView();
-        params = view.getLayoutParams();
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        textSwitcher.setMeasureAllChildren(false);
 
         textSwitcher.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeRight() {
@@ -493,7 +493,26 @@ public class MainActivity extends Activity {
 
             public void onClick() {
                 chatText.setText(suggestedText);
-                hideSuggestions();
+                if (size > 1){
+                    if (index < size - 1){
+                        textSwitcher.setText(suggestionList.elementAt(index + 1));
+                        suggestedText = suggestionList.elementAt(index + 1);
+                        suggestionList.removeElementAt(index);
+                        size --;
+                        if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
+                    }
+                    else {
+                        textSwitcher.setText(suggestionList.elementAt(index - 1));
+                        suggestedText = suggestionList.elementAt(index - 1);
+                        suggestionList.removeElementAt(index);
+                        index--;
+                        size--;
+                        if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
+                    }
+                }
+                else {
+                    hideSuggestions();
+                }
             }
         });
     }
