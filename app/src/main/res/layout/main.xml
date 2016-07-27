@@ -56,20 +56,6 @@
     </LinearLayout>
 
 
-<<<<<<< HEAD
-=======
-        <ListView
-        android:id="@+id/listview"
-        android:divider="#00000000"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="120dp"
-        android:textColor="#BBFFDC"/>
-    </LinearLayout>
-
-
-
->>>>>>> a51db73b4188f089039de163a657f65bb3186aad
     <RelativeLayout
         android:id="@+id/form"
         android:layout_height="wrap_content"
