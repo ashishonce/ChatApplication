@@ -2,49 +2,40 @@ package com.tutorial.chatapps;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.app.Activity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.util.Log;
-import android.provider.ContactsContract;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.widget.ViewSwitcher;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -52,8 +43,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
-import android.widget.ViewSwitcher;
-
 import java.util.List;
 import java.util.Vector;
 
@@ -116,12 +105,11 @@ public class MainActivity extends Activity {
         SharedPreferences prefs = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        currentuser = (TextView)findViewById(R.id.textView1);
 
-        currentuser.setText(prefs.getString("senderID","New"));
-
+        currentuser = (TextView) findViewById(R.id.textView1);
+        currentuser.setText(prefs.getString("senderID", "New"));
         currentuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-        suggestionsImage = (ImageView)findViewById(R.id.imageView2);
+        suggestionsImage = (ImageView) findViewById(R.id.imageView2);
         suggestionsImage.setVisibility(View.INVISIBLE);
         // initialization
 
@@ -137,18 +125,18 @@ public class MainActivity extends Activity {
                     .setMessage("Please choose your destiny")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            String clientID = ((EditText)dialoglayout.findViewById(R.id.UserID)).getText().toString();
-                            String senderID = ((EditText)dialoglayout.findViewById(R.id.SenderID)).getText().toString();
+                            String clientID = ((EditText) dialoglayout.findViewById(R.id.UserID)).getText().toString();
+                            String senderID = ((EditText) dialoglayout.findViewById(R.id.SenderID)).getText().toString();
 
                             SharedPreferences prefs = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
 
                             SharedPreferences.Editor preferencesEditor = prefs.edit();
                             preferencesEditor.putString("clientID", clientID);
-                            preferencesEditor.putString("senderID", senderID );
+                            preferencesEditor.putString("senderID", senderID);
                             preferencesEditor.commit();
 
-                            Log.e("data:" , clientID + " " + senderID);
 
+                            Log.e("data:", clientID + " " + senderID);
                             currentuser.setText(senderID);
                             startRegistrationService(true, false);
                         }
@@ -168,7 +156,7 @@ public class MainActivity extends Activity {
         chatText.setBackgroundDrawable(getResources().getDrawable(R.drawable.back));
         chatText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER) && chatText.getText().toString().length() > 0 ){
                     return sendChatMessage();
                 }
                 return false;
@@ -177,7 +165,8 @@ public class MainActivity extends Activity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sendChatMessage();
+                if(chatText.getText().toString().length() > 0)
+                    sendChatMessage();
             }
         });
 
@@ -224,26 +213,27 @@ public class MainActivity extends Activity {
 
     private boolean sendChatMessage() {
         adp.add(new ChatMessage(false, chatText.getText().toString()));
+        final String msg = chatText.getText().toString();
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    SharedPreferences prefs = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);;
+                    SharedPreferences prefs = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+                    ;
 
                     // Create a new HttpClient and Post Header
                     HttpClient httpclient = new DefaultHttpClient();
                     HttpPost httppost = new HttpPost(GCMCommonUtils.SERVER_URL);
                     // Add your data
                     List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                    nameValuePairs.add(new BasicNameValuePair("UserID", prefs.getString("senderID","Error")));
+                    nameValuePairs.add(new BasicNameValuePair("UserID", prefs.getString("senderID", "Error")));
                     /// name has message her
-                    nameValuePairs.add(new BasicNameValuePair("Name", chatText.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("Name", msg));
                     httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                     // Execute HTTP Post Request
                     HttpResponse response = httpclient.execute(httppost);
-
-                    Log.e("POST SEND", response.toString() + " to" + prefs.getString("senderID","Error") + "Msg = " + chatText.getText().toString() );
+                    Log.e("POST SEND", response.toString() + " to" + prefs.getString("senderID","Error") + "Msg = " + msg );
 
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
@@ -256,7 +246,7 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    public boolean receiveChatMessage(String message){
+    public boolean receiveChatMessage(String message) {
 
         String[] receivedMsg = message.split("\\$");
         String chatMessage = receivedMsg[0];
@@ -281,20 +271,16 @@ public class MainActivity extends Activity {
             adp.add(new ChatMessage(true, chatMessage ));
         }
 
-        if(receivedMsg.length > 1)
-        {
+        if (receivedMsg.length > 1) {
             Vector<String> temp = new Vector<String>();
-            for( int i=1;i <receivedMsg.length;i++ )
-            {
+            for (int i = 1; i < receivedMsg.length; i++) {
                 temp.add(receivedMsg[i]);
             }
 
             suggestionList.clear();
             this.setSuggestionTextItems(temp);
             showSuggestions();
-        }
-        else
-        {
+        } else {
             hideSuggestions();
         }
 
@@ -345,7 +331,7 @@ public class MainActivity extends Activity {
             suggestedText = suggestionList.elementAt(index);
         }
 
-        if (size > 1){
+        if (size > 1) {
             rightArrow.setVisibility(View.VISIBLE);
         }
     }
@@ -384,11 +370,9 @@ public class MainActivity extends Activity {
                     suggestedText = suggestionList.elementAt(index);
                     if (index == 0) leftArrow.setVisibility(View.INVISIBLE);
                     if (index < size - 1) rightArrow.setVisibility(View.VISIBLE);
-                }
-                else if (index < 0){
+                } else if (index < 0) {
                     hideSuggestions();
-                }
-                else {
+                } else {
                     index++;
                 }
             }
@@ -404,11 +388,9 @@ public class MainActivity extends Activity {
                     suggestedText = suggestionList.elementAt(index);
                     if (index == size - 1) rightArrow.setVisibility(View.INVISIBLE);
                     if (index > 0) leftArrow.setVisibility(View.VISIBLE);
-                }
-                else if (index == size){
+                } else if (index == size) {
                     hideSuggestions();
-                }
-                else {
+                } else {
                     index--;
                 }
             }
@@ -420,13 +402,13 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void hideSuggestions(){
+    private void hideSuggestions() {
         suggestionsImage.setVisibility(View.INVISIBLE);
         suggestions.setVisibility(View.GONE);
     }
 
     private void showSuggestions() {
-       suggestionsImage.setVisibility(View.VISIBLE);
+        suggestionsImage.setVisibility(View.VISIBLE);
         suggestions.setVisibility(View.VISIBLE);
     }
 
